@@ -450,7 +450,7 @@ function sendWithPDF(){
   .then(function(result){
     document.getElementById('btn-send').disabled=false;
     if(result.ok&&result.data.ok){
-      showOverlay('ok','Erfolgreich gesendet!','Die Stundenliste wurde als PDF an julia.fuchsberger@chaka2.com gesendet.');
+      showOverlay('ok','Erfolgreich gesendet!','Die Stundenliste wurde erfolgreich als PDF versendet.');
     }else{
       showOverlay('err','Fehler beim Senden',JSON.stringify(result.data.error||result.data));
     }
