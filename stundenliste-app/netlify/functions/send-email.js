@@ -6,6 +6,11 @@ exports.handler = async function(event) {
   }
 
   const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+  // Empfänger der Stundenlisten – in Netlify als Environment Variable änderbar
+  const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || 'julia.fuchsberger@chaka2.com';
+  // Verifizierter Absender bei SendGrid
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'julia.fuchsberger@chaka2.com';
+
   if (!SENDGRID_API_KEY) {
     return { statusCode: 500, body: JSON.stringify({ error: 'SENDGRID_API_KEY nicht konfiguriert' }) };
   }
@@ -13,7 +18,7 @@ exports.handler = async function(event) {
   let body;
   try {
     body = JSON.parse(event.body);
-  } catch(e) {
+  } catch (e) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Ungültiges JSON' }) };
   }
 
@@ -24,10 +29,8 @@ exports.handler = async function(event) {
   }
 
   const payload = JSON.stringify({
-    personalizations: [{
-      to: [{ email: 'julia.fuchsberger@chaka2.com', name: 'Julia Fuchsberger' }]
-    }],
-    from: { email: 'julia.fuchsberger@chaka2.com', name: 'Stundenliste Chaka2' },
+    personalizations: [{ to: [{ email: RECIPIENT_EMAIL }] }],
+    from: { email: FROM_EMAIL, name: 'Stundenliste Chaka2' },
     subject: subject,
     content: [{
       type: 'text/html',
@@ -37,13 +40,13 @@ exports.handler = async function(event) {
           <p style="color:#666;margin-bottom:16px">${monthYear}</p>
           <table style="border-collapse:collapse;width:100%;margin-bottom:20px">
             <tr>
-              <td style="padding:8px 12px;background:#f5f5f3;border-radius:6px 0 0 6px;color:#888;font-size:13px">Promotor/in</td>
-              <td style="padding:8px 12px;background:#f5f5f3;border-radius:0 6px 6px 0;font-weight:600">${senderName}</td>
+              <td style="padding:8px 12px;background:#f5f5f3;color:#888;font-size:13px">Promotor/in</td>
+              <td style="padding:8px 12px;background:#f5f5f3;font-weight:600">${senderName}</td>
             </tr>
             <tr><td colspan="2" style="padding:4px"></td></tr>
             <tr>
-              <td style="padding:8px 12px;background:#f5f5f3;border-radius:6px 0 0 6px;color:#888;font-size:13px">Gesamtstunden</td>
-              <td style="padding:8px 12px;background:#f5f5f3;border-radius:0 6px 6px 0;font-weight:600">${totalHours}</td>
+              <td style="padding:8px 12px;background:#f5f5f3;color:#888;font-size:13px">Gesamtstunden</td>
+              <td style="padding:8px 12px;background:#f5f5f3;font-weight:600">${totalHours}</td>
             </tr>
           </table>
           <p style="font-size:13px;color:#888">Die unterschriebene Stundenliste ist als PDF angehängt.</p>
